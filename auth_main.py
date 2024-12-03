@@ -1,5 +1,3 @@
-# auth_main.py
-
 import sys
 from PyQt5 import QtWidgets
 from login_window import LoginWindow

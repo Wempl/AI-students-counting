@@ -6,28 +6,26 @@ class AuthWindow(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle("Авторизация")
         self.setFixedSize(400, 300)
-        self.on_success = on_success  # Функция, вызываемая при успешной авторизации
+        self.on_success = on_success 
 
         self.initUI()
 
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
 
-        # Поля ввода
+
         self.username_input = QtWidgets.QLineEdit()
         self.username_input.setPlaceholderText("Имя пользователя")
         self.password_input = QtWidgets.QLineEdit()
         self.password_input.setPlaceholderText("Пароль")
         self.password_input.setEchoMode(QtWidgets.QLineEdit.Password)
 
-        # Кнопки
         self.login_button = QtWidgets.QPushButton("Войти")
         self.login_button.clicked.connect(self.login)
 
         self.register_button = QtWidgets.QPushButton("Зарегистрироваться")
         self.register_button.clicked.connect(self.register)
 
-        # Добавляем виджеты
         layout.addWidget(self.username_input)
         layout.addWidget(self.password_input)
         layout.addWidget(self.login_button)
@@ -40,7 +38,7 @@ class AuthWindow(QtWidgets.QWidget):
         password = self.password_input.text()
         if authenticate_user(username, password):
             QtWidgets.QMessageBox.information(self, "Успех", "Авторизация успешна!")
-            self.on_success()  # Переход в основное окно
+            self.on_success()  
             self.parent_window.logged_in_user = username
             self.close()
         else:

@@ -3,28 +3,30 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
+import subprocess
+from class_settings_window import ClassSettingsWindow
+import face_recognition
 
 
 class MainApp(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Счетовод")
-        self.setFixedSize(800, 600)  # Фиксированный размер окна
+        self.setFixedSize(800, 600) 
 
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.logged_in_user = None  # Для передачи логина в настройки
+        self.logged_in_user = None  
         self.update_class_list()
 
     def update_class_list(self):
-        # Очистка текущего содержимого layout
         for i in reversed(range(self.layout.count())):
             widget = self.layout.itemAt(i).widget()
             if widget:
                 widget.deleteLater()
 
-        # Верхний layout для настроек
+
         top_layout = QtWidgets.QHBoxLayout()
         top_widget = QtWidgets.QWidget()
         top_widget.setLayout(top_layout)
@@ -35,60 +37,52 @@ class MainApp(QtWidgets.QWidget):
         settings_button.clicked.connect(self.open_settings)
         top_layout.addWidget(settings_button, alignment=QtCore.Qt.AlignRight)
 
-        # Установить отступ от верха
+
         top_layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(top_widget, alignment=QtCore.Qt.AlignTop)
 
-        # Проверка папки классов
         if not os.path.exists("classes"):
             os.makedirs("classes")
 
         classes = [f for f in os.listdir("classes") if os.path.isdir(os.path.join("classes", f))]
 
         if not classes:
-            # Если классов нет, отображаем сообщение
             no_classes_label = QtWidgets.QLabel("К сожалению, программа не обнаружила созданных классов!")
             no_classes_label.setStyleSheet("color: red; font-weight: bold; font-size: 16px;")
-            no_classes_label.setAlignment(QtCore.Qt.AlignCenter)  # Центрирование текста
+            no_classes_label.setAlignment(QtCore.Qt.AlignCenter)
             self.layout.addWidget(no_classes_label)
 
         else:
             for class_name in classes:
-                # Создаем горизонтальный layout для класса
                 class_layout = QtWidgets.QHBoxLayout()
                 class_widget = QtWidgets.QWidget()
                 class_widget.setLayout(class_layout)
 
-                # Кнопка запуска класса
                 class_button = QtWidgets.QPushButton(class_name)
                 class_button.setStyleSheet("font-size: 14px; padding: 10px;")
                 class_button.clicked.connect(lambda _, cn=class_name: self.start_class(cn))
                 class_layout.addWidget(class_button)
 
-                # Кнопка аналитики
                 analytics_button = QtWidgets.QPushButton("📊")
                 analytics_button.setFixedSize(40, 40)
                 analytics_button.clicked.connect(lambda _, cn=class_name: self.open_analytics(cn))
                 class_layout.addWidget(analytics_button)
 
-                # Кнопка изменения названия класса
                 edit_button = QtWidgets.QPushButton("📝")
-                edit_button.setFixedSize(40, 40)  # Размер кнопки изменения
+                edit_button.setFixedSize(40, 40)  
                 edit_button.setStyleSheet("font-size: 14px;")
                 edit_button.clicked.connect(lambda _, cn=class_name: self.rename_class(cn))
                 class_layout.addWidget(edit_button)
 
-                # Кнопка удаления класса
                 delete_button = QtWidgets.QPushButton("🗑")
-                delete_button.setFixedSize(40, 40)  # Устанавливаем такой же размер, как у кнопки настроек
+                delete_button.setFixedSize(40, 40)  
                 delete_button.setStyleSheet("color: red; font-weight: bold; font-size: 14px;")
                 delete_button.clicked.connect(lambda _, cn=class_name: self.delete_class(cn))
                 class_layout.addWidget(delete_button)
 
-                # Добавляем класс в основной layout
+      
                 self.layout.addWidget(class_widget)
 
-        # Кнопка создания нового класса
         create_class_button = QtWidgets.QPushButton("Создать класс")
         create_class_button.setStyleSheet("font-size: 16px; padding: 10px;")
         create_class_button.clicked.connect(self.create_class)
@@ -108,7 +102,6 @@ class MainApp(QtWidgets.QWidget):
                 f.write(f"{student}\n")
 
     def start_class(self, class_name):
-        # Проверяем, есть ли обученные данные
         class_path = os.path.join("classes", class_name)
         known_faces_path = os.path.join(class_path, "known_faces.npy")
         known_names_path = os.path.join(class_path, "known_names.npy")
@@ -117,11 +110,9 @@ class MainApp(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(self, "Ошибка", f"У класса {class_name} отсутствуют обученные данные.")
             return
 
-        # Загрузка данных
         known_faces = np.load(known_faces_path, allow_pickle=True)
         known_names = np.load(known_names_path, allow_pickle=True)
 
-        # Импортируем AbsentStudentsWindow и запускаем окно
         from gui_absent_students import AbsentStudentsWindow
         self.absent_students_window = AbsentStudentsWindow(
             class_name, known_faces, known_names, parent_window=self
@@ -134,7 +125,7 @@ class MainApp(QtWidgets.QWidget):
             from face_create_class import CreateClassWindow
             self.create_class_window = CreateClassWindow(parent_window=self)
             self.create_class_window.show()
-            self.hide()  # Скрыть главное окно
+            self.hide()  
 
             def on_close_event(event):
                 self.update_class_list()
@@ -149,8 +140,8 @@ class MainApp(QtWidgets.QWidget):
 
     def open_settings(self):
         from setting import SettingsWindow
-        self.settings_window = SettingsWindow()  # Передаём ссылку на главное окно
-        self.settings_window.show()  # Показываем окно настроек
+        self.settings_window = SettingsWindow() 
+        self.settings_window.show()  
         self.show()
 
 
@@ -158,18 +149,21 @@ class MainApp(QtWidgets.QWidget):
 
 
     def rename_class(self, class_name):
-        new_name, ok = QtWidgets.QInputDialog.getText(self, "Переименовать класс", "Введите новое название класса:")
-        if ok and new_name:
-            old_path = os.path.join("classes", class_name)
-            new_path = os.path.join("classes", new_name)
-            if not os.path.exists(new_path):
-                os.rename(old_path, new_path)
-                self.update_class_list()
-            else:
-                QtWidgets.QMessageBox.warning(self, "Ошибка", f"Класс с именем {new_name} уже существует!")
+        self.class_settings_window = ClassSettingsWindow(
+            class_name, update_main_window_callback=self.update_class_list
+        )
+        self.class_settings_window.show()
+        self.hide()  # Скрываем главное окно
+    
+    def show_and_update_main_window(self):
+        self.update_class_list()
+        self.show()
+
+
+
 
     def delete_class(self, class_name):
-        # Подтверждение удаления класса
+        
         reply = QtWidgets.QMessageBox.question(
             self,
             "Подтверждение удаления",
@@ -180,7 +174,7 @@ class MainApp(QtWidgets.QWidget):
             class_path = os.path.join("classes", class_name)
             if os.path.exists(class_path):
                 shutil.rmtree(class_path)
-            self.update_class_list()  # Обновляем список классов
+            self.update_class_list()  
 
     def open_analytics(self, class_name):
         logs_path = os.path.join("classes", class_name, "logs")
@@ -204,25 +198,19 @@ class AnalyticsWindow(QtWidgets.QWidget):
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
 
-        # Создаем горизонтальный layout для заголовка и кнопки
         header_layout = QtWidgets.QHBoxLayout()
 
-        # Заголовок таблицы
         self.label = QtWidgets.QLabel(f"                                                      История успеваемости - {self.class_name}")
         self.label.setStyleSheet("font-size: 18px; font-weight: bold;")
         header_layout.addWidget(self.label)
 
-        # Кнопка экспорта
         export_button = QtWidgets.QPushButton("🖨")
         export_button.setToolTip("Сохранить как Excel")
         export_button.setFixedSize(40, 40)
         export_button.clicked.connect(self.export_to_excel)
         header_layout.addWidget(export_button, alignment=QtCore.Qt.AlignRight)
 
-        # Добавляем горизонтальный layout (заголовок + кнопка) в основной layout
         layout.addLayout(header_layout)
-
-        # Таблица
         self.logs_table = QtWidgets.QTableWidget()
         layout.addWidget(self.logs_table)
 
@@ -254,14 +242,14 @@ class AnalyticsWindow(QtWidgets.QWidget):
                 self.logs_table.setItem(row, 0, QtWidgets.QTableWidgetItem(student))
                 for col, date in enumerate(attendance_data.keys(), start=1):
                     status = attendance_data[date].get(student, "")
-                    if status != "ПР":  # Если статус не "ПР", добавляем в таблицу
+                    if status != "ПР":  
                         self.logs_table.setItem(row, col, QtWidgets.QTableWidgetItem(status))
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Ошибка", f"Ошибка при чтении логов: {e}")
 
     def export_to_excel(self):
         try:
-            # Получаем данные из таблицы
+
             headers = [self.logs_table.horizontalHeaderItem(i).text() for i in range(self.logs_table.columnCount())]
             data = []
             for row in range(self.logs_table.rowCount()):
@@ -271,7 +259,7 @@ class AnalyticsWindow(QtWidgets.QWidget):
                     row_data.append(item.text() if item else "")
                 data.append(row_data)
 
-            # Сохраняем в Excel
+
             df = pd.DataFrame(data, columns=headers)
             downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
             output_file = os.path.join(downloads_path, f"Аналитика_{self.class_name}.xlsx")
@@ -280,8 +268,10 @@ class AnalyticsWindow(QtWidgets.QWidget):
             QtWidgets.QMessageBox.information(self, "Успех", f"Файл сохранён в: {output_file}")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Ошибка", f"Ошибка при экспорте: {e}")
-      
 
+        path = r"C:\Users\UserMan\Downloads"  
+
+        subprocess.run(["explorer", path])
 
 if __name__ == "__main__":
     import sys

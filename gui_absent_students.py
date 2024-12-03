@@ -24,21 +24,12 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
     import dlib
     import sys
 
-    # def get_resource_path(relative_path):
-    #     """Получает путь к ресурсу, учитывая временные файлы PyInstaller."""
-    #     if hasattr(sys, '_MEIPASS'):  # PyInstaller добавляет _MEIPASS во время выполнения
-    #         return os.path.join(sys._MEIPASS, relative_path)
-    #     return os.path.join(os.path.abspath("."), relative_path)
-
-    # # Используйте get_resource_path для загрузки модели
-    # model_path = get_resource_path("models/shape_predictor_68_face_landmarks.dat")
-    # shape_predictor = dlib.shape_predictor(model_path)
 
 
     def initUI(self):
         main_layout = QtWidgets.QVBoxLayout()
 
-        # Заголовок
+
         title_label = QtWidgets.QLabel(f"Класс: {self.class_name}")
         title_label.setStyleSheet("font-size: 24px; font-weight: bold;")
         title_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -48,34 +39,33 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
         subtitle_label.setAlignment(QtCore.Qt.AlignCenter)
         main_layout.addWidget(subtitle_label)
 
-        # Основной макет: камера + списки
+
         content_layout = QtWidgets.QHBoxLayout()
 
-        # Камера
+
         self.camera_label = QtWidgets.QLabel()
         self.camera_label.setFixedSize(640, 480)
         self.camera_label.setStyleSheet("border: 1px solid black;")
         content_layout.addWidget(self.camera_label)
 
-        # Боковая панель со списками
+
         side_layout = QtWidgets.QVBoxLayout()
 
-        # Список отсутствующих
+
         absent_layout = QtWidgets.QVBoxLayout()
         absent_label = QtWidgets.QLabel("Отсутствуют:")
         absent_label.setStyleSheet("font-size: 18px; font-weight: bold; color: red;")
         self.absent_list = QtWidgets.QListWidget()
-        self.absent_list.setFixedHeight(205)  # Высота, равная камере
+        self.absent_list.setFixedHeight(205)  
         absent_layout.addWidget(absent_label)
         absent_layout.addWidget(self.absent_list)
         side_layout.addLayout(absent_layout)
 
-        # Список присутствующих
         present_layout = QtWidgets.QVBoxLayout()
         present_label = QtWidgets.QLabel("Присутствуют:")
         present_label.setStyleSheet("font-size: 18px; font-weight: bold; color: green;")
         self.present_list = QtWidgets.QListWidget()
-        self.present_list.setFixedHeight(205)  # Высота, равная камере
+        self.present_list.setFixedHeight(205) 
         present_layout.addWidget(present_label)
         present_layout.addWidget(self.present_list)
         side_layout.addLayout(present_layout)
@@ -83,7 +73,7 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
         content_layout.addLayout(side_layout)
         main_layout.addLayout(content_layout)
 
-        # Кнопка завершения проверки
+ 
         finish_button = QtWidgets.QPushButton("Завершить проверку")
         finish_button.setStyleSheet("font-size: 16px; font-weight: bold;")
         finish_button.clicked.connect(self.finish_check)
@@ -114,16 +104,14 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
                     name = self.known_names[match_index]
                     self.recognized_students.add(name)
 
-                # Отрисовка рамки и имени
+               
                 color = (0, 255, 0) if name != "Неизвестный" else (0, 0, 255)
                 cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
                 cv2.putText(frame, name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            # Обновляем изображение в QLabel
             image = QtGui.QImage(frame.data, frame.shape[1], frame.shape[0], QtGui.QImage.Format_BGR888)
             self.camera_label.setPixmap(QtGui.QPixmap.fromImage(image))
 
-            # Обновляем списки присутствующих и отсутствующих
             self.update_lists()
 
     def update_lists(self):
@@ -141,10 +129,10 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
         self.camera.release()
         self.close()
 
-        # Сохранение логов
+       
         self.save_logs()
 
-        # Открываем меню завершения проверки
+      
         absent_students = [student for student in self.known_names if student not in self.recognized_students]
         self.results_window = ResultsWindow(absent_students, self.class_name, self.known_faces, self.known_names, self.parent_window)
         self.results_window.show()
@@ -159,9 +147,9 @@ class AbsentStudentsWindow(QtWidgets.QWidget):
         with open(log_file, "w", encoding="utf-8") as file:
             for student in self.known_names:
                 if student in self.recognized_students:
-                    file.write(f"{student} - ПР\n")  # Присутствующий
+                    file.write(f"{student} - ПР\n")  
                 else:
-                    file.write(f"{student} - Б\n")  # Отсутствующий
+                    file.write(f"{student} - Б\n")  
 
         print(f"Лог сохранён: {log_file}")
 
@@ -185,7 +173,6 @@ class ResultsWindow(QtWidgets.QWidget):
         title_label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(title_label)
 
-        # Список отсутствующих
         absent_label = QtWidgets.QLabel("Отсутствуют:")
         absent_label.setStyleSheet("font-size: 16px; font-weight: bold; color: black;")
         layout.addWidget(absent_label)
@@ -194,7 +181,7 @@ class ResultsWindow(QtWidgets.QWidget):
         self.absent_list.addItems(self.absent_students)
         layout.addWidget(self.absent_list)
 
-        # Кнопки управления
+    
         buttons_layout = QtWidgets.QHBoxLayout()
 
         restart_button = QtWidgets.QPushButton("Перезапустить")

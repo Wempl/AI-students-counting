@@ -13,19 +13,16 @@ class AnalyticsWindow(QtWidgets.QWidget):
     def initUI(self):
         layout = QtWidgets.QVBoxLayout()
 
-        # Заголовок
         title = QtWidgets.QLabel(f"Аналитика посещаемости для класса: {self.class_name}")
         title.setStyleSheet("font-size: 18px; font-weight: bold;")
         title.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(title)
 
-        # Таблица для отображения логов
         self.table = QtWidgets.QTableWidget()
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["Дата", "Присутствующие", "Отсутствующие"])
         layout.addWidget(self.table)
 
-        # Загрузка логов
         self.load_logs()
 
         self.setLayout(layout)

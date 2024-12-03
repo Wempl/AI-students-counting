@@ -22,10 +22,9 @@ def init_db():
     """)
     conn.commit()
 
-    # Проверяем существующие таблицы для диагностики
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
-    print("Существующие таблицы:", tables)  # Ожидаем [('users',)]
+    print("Существующие таблицы:", tables)  
 
     conn.close()
 
@@ -47,7 +46,6 @@ def register_user(username, password):
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
 
-        # Диагностика: проверяем, какие таблицы есть в базе данных
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
         print("Таблицы в базе данных:", tables)
@@ -121,10 +119,8 @@ def get_all_users():
 
 
 if __name__ == "__main__":
-    # Инициализация базы данных перед выполнением операций
     init_db()
 
-    # Примеры работы
     print("Регистрация пользователя...")
     if register_user("test_user", "secure_password"):
         print("Пользователь зарегистрирован.")

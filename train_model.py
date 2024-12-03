@@ -10,18 +10,6 @@ class FaceRecognitionModel:
         self.known_names = []
         self.load_known_faces()
 
-    import dlib
-    import sys
-
-    # def get_resource_path(relative_path):
-    #     """Получает путь к ресурсу, учитывая временные файлы PyInstaller."""
-    #     if hasattr(sys, '_MEIPASS'):  # PyInstaller добавляет _MEIPASS во время выполнения
-    #         return os.path.join(sys._MEIPASS, relative_path)
-    #     return os.path.join(os.path.abspath("."), relative_path)
-
-    # # Используйте get_resource_path для загрузки модели
-    # model_path = get_resource_path("models/shape_predictor_68_face_landmarks.dat")
-    # shape_predictor = dlib.shape_predictor(model_path)
 
 
     def load_known_faces(self):
@@ -47,7 +35,7 @@ class FaceRecognitionModel:
 
     def add_student_face(self, student_name, photo_path):
         """Добавляем новое лицо ученика и сразу обучаем модель для этого лица."""
-        # Загружаем изображение и вычисляем вектор признаков
+      
         image = face_recognition.load_image_file(photo_path)
         face_encodings = face_recognition.face_encodings(image)
         
@@ -56,7 +44,7 @@ class FaceRecognitionModel:
             self.known_faces.append(student_face_encoding)
             self.known_names.append(student_name)
             
-            # Сохраняем обновленные данные известных лиц
+           
             self.save_known_faces()
             print(f"Ученик {student_name} добавлен и обучен.")
         else:
@@ -69,7 +57,7 @@ class FaceRecognitionModel:
 
         recognized_names = []
         for unknown_encoding in unknown_encodings:
-            # Сравниваем с известными лицами
+        
             results = face_recognition.compare_faces(self.known_faces, unknown_encoding)
             if True in results:
                 match_index = results.index(True)

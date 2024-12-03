@@ -2,11 +2,11 @@ from PyQt5 import QtWidgets, QtCore
 
 
 class RegistrationWindow(QtWidgets.QWidget):
-    switch_to_login = QtCore.pyqtSignal()  # Сигнал для перехода к окну авторизации
+    switch_to_login = QtCore.pyqtSignal()  
 
     def __init__(self, on_back=None):
         super().__init__()
-        self.on_back = on_back  # Сохраняем функцию "назад", если передана
+        self.on_back = on_back  
         self.setWindowTitle("Регистрация")
         self.setFixedSize(400, 300)
         self.init_ui()
@@ -75,4 +75,4 @@ class RegistrationWindow(QtWidgets.QWidget):
             self.on_back()
         else:
             self.switch_to_login.emit()
-        self.close()  # Закрываем окно регистрации
+        self.close() 

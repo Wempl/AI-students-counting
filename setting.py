@@ -10,37 +10,36 @@ class SettingsWindow(QtWidgets.QWidget):
     def closeEvent(self, event):
         """Событие закрытия окна."""
         if self.parent_window:
-            self.parent_window.show()  # Показываем основное окно
-        super().closeEvent(event)  # Вызываем стандартное поведение
+            self.parent_window.show() 
+        super().closeEvent(event)  
 
     def initUI(self):
         self.setWindowTitle("Настройки")
         self.setFixedSize(800, 600)
         
-        # Добавьте здесь остальные элементы UI (например, выбор камеры)
+        
 
 
         layout = QtWidgets.QVBoxLayout()
 
-        # Заголовок
+       
         title_label = QtWidgets.QLabel("Настройки камеры")
         title_label.setAlignment(QtCore.Qt.AlignCenter)
         title_label.setStyleSheet("font-size: 20px; font-weight: bold;")
         layout.addWidget(title_label)
 
-        # Предпросмотр камеры
         self.camera_preview = QtWidgets.QLabel("Предпросмотр камеры")
         self.camera_preview.setFixedSize(640, 480)
         self.camera_preview.setStyleSheet("border: 1px solid black;")
         layout.addWidget(self.camera_preview, alignment=QtCore.Qt.AlignCenter)
 
-        # Выпадающий список камер
+    
         self.camera_dropdown = QtWidgets.QComboBox()
         self.camera_dropdown.setPlaceholderText("Выберите камеру")
         self.camera_dropdown.currentIndexChanged.connect(self.update_camera_preview)
         layout.addWidget(self.camera_dropdown, alignment=QtCore.Qt.AlignCenter)
 
-        # Инициализация списка камер
+        
         self.populate_camera_dropdown()
 
         self.setLayout(layout)
@@ -55,7 +54,7 @@ class SettingsWindow(QtWidgets.QWidget):
             if not cap.isOpened():
                 break
 
-            camera_name = f"Камера {index}"  # Если нужна более специфическая информация о камерах, это можно улучшить
+            camera_name = f"Камера {index}"  
             self.cameras.append(index)
             self.camera_dropdown.addItem(camera_name)
             cap.release()
@@ -68,21 +67,19 @@ class SettingsWindow(QtWidgets.QWidget):
         """Обновляет предпросмотр камеры на основе выбранной в списке."""
         selected_camera_index = self.camera_dropdown.currentIndex()
 
-        # Если камера не выбрана или список пуст, ничего не делаем
+        
         if selected_camera_index == -1 or not self.cameras:
             return
 
-        # Останавливаем предыдущую камеру, если она активна
+  
         if hasattr(self, 'camera') and self.camera.isOpened():
             self.camera.release()
 
-        # Открываем выбранную камеру
         self.camera = cv2.VideoCapture(self.cameras[selected_camera_index], cv2.CAP_DSHOW)
         if not self.camera.isOpened():
             QtWidgets.QMessageBox.warning(self, "Ошибка", "Не удалось открыть камеру")
             return
 
-        # Таймер для обновления предпросмотра
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.display_camera_frame)
         self.timer.start(30)
