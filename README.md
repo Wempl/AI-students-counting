@@ -15,7 +15,7 @@
 ## Как запустить?
 1. Клонируйте проект:
    ```bash
-   git clone https://github.com/ваш-профиль/счетовод.git
+   git clone https://github.com/Wempl/AI-students-counting
    ```
 2. Установите необходимые библиотеки:
    ```bash
@@ -61,7 +61,7 @@
 ## How to run?
 1. Clone the project:
    ```bash
-   git clone https://github.com/your-profile/schetovod.git
+   git clone https://github.com/Wempl/AI-students-counting
    ```
 2. Install dependencies:
    ```bash
