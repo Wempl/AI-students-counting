@@ -23,7 +23,7 @@
    ```
 3. Запустите приложение:
    ```bash
-   python main.py
+   python auth_main.py
    ```
 
 ## На чём сделано?
@@ -69,7 +69,7 @@
    ```
 3. Launch the app:
    ```bash
-   python main.py
+   python auth_main.py
    ```
 
 ## What’s it made with?
